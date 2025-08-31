@@ -104,6 +104,9 @@ class Player:
         print('Successfully purchased golem!')
         return True
     
+    def play(self, card):
+        pass
+    
 
 
 class Golem:
