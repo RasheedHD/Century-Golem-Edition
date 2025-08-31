@@ -130,7 +130,7 @@ board_surface = pygame.image.load('Graphics/Board 2.png').convert()
 test_card_surface = pygame.image.load('Graphics/2Gold.png').convert_alpha()
 test_card_rect = test_card_surface.get_rect(topleft = (1200, 500))
 
-#Game Logic VVV Yellow --> Green --> Blue --> Pink
+#Game Logic VVV (Yellow --> Green --> Blue --> Pink)
 
 players = [
     Player.from_name('P1', 1),
