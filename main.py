@@ -179,6 +179,7 @@ screen_height = 1080
 screen = pygame.display.set_mode((screen_width, screen_height), pygame.RESIZABLE)
 pygame.display.set_caption("Century: Golem Edition")
 clock = pygame.time.Clock()
+
 test_font_1 = pygame.font.Font(None, 110)
 test_font_2 = pygame.font.Font(None, 80)
 
