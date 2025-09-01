@@ -171,21 +171,27 @@ def game_over():
     exit()
 
 pygame.init()
-screen_width = 1736
-screen_height = 980
+screen_width = 1920
+screen_height = 1080
 screen = pygame.display.set_mode((screen_width, screen_height), pygame.RESIZABLE)
 pygame.display.set_caption("Century: Golem Edition")
 clock = pygame.time.Clock()
 test_font_1 = pygame.font.Font(None, 90)
 test_font_2 = pygame.font.Font(None, 60)
 
-board_surface = pygame.image.load('Graphics/Board.png').convert()
+board_surface = pygame.image.load('Graphics/Background.jpg').convert()
 
 
-test_card_surface = pygame.image.load('Graphics/2Gold.png').convert_alpha()
-test_card_rect = test_card_surface.get_rect(topleft = (1200, 500))
+merchant_surf = pygame.image.load('Graphics/Merchant_Card_Back.png').convert_alpha()
+merchant_rect = merchant_surf.get_rect(topleft = (1529, 522))
 
-#Game Logic VVV (Yellow --> Green --> Blue --> Pink).
+golem_surf = pygame.image.load('Graphics/Golem_Card_Back.png').convert_alpha()
+golem_rect = golem_surf.get_rect(topleft = (1529, 122))
+
+caravan_surf = pygame.image.load('Graphics/Caravan_Card_Back.png').convert_alpha()
+caravan_rect = caravan_surf.get_rect(bottomleft = (70, 1050))
+
+#(Yellow --> Green --> Blue --> Pink).
 
 players = [
     Player.from_name('P1', 1),
@@ -275,10 +281,12 @@ while True:
     screen.blit(board_surface, (0,0))
     screen.blit(turn_text_surface, (60,50))
     screen.blit(move_text_surface, (60, 140))
-    test_card_rect.x-=5
-    if test_card_rect.right <= 0:
-        test_card_rect.left = 1736
-    screen.blit(test_card_surface, test_card_rect)
+    merchant_rect.x-=5
+    if merchant_rect.right <= 0:
+        merchant_rect.left = 1920
+    screen.blit(merchant_surf, merchant_rect)
+    screen.blit(golem_surf, golem_rect)
+    screen.blit(caravan_surf, caravan_rect)
 
     pygame.display.update()
     clock.tick(60)
