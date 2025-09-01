@@ -41,11 +41,11 @@ class Player:
     @classmethod
     def from_name(cls, name, position):
         if position == 1:
-            return cls(name, {'Yellow': 3, 'Green': 0, 'Blue': 0, 'Pink': 0}, {UpgradeCard(2), CrystalCard({'Yellow': 2})}, set(), [], 0)
+            return cls(name, {'Yellow': 3, 'Green': 0, 'Blue': 0, 'Pink': 0}, [UpgradeCard(2), CrystalCard({'Yellow': 2})], [], [], 0)
         elif position in [2, 3]:
-            return cls(name, {'Yellow': 4, 'Green': 0, 'Blue': 0, 'Pink': 0}, {UpgradeCard(2), CrystalCard({'Yellow': 2})}, set(), [], 0)
+            return cls(name, {'Yellow': 4, 'Green': 0, 'Blue': 0, 'Pink': 0}, [UpgradeCard(2), CrystalCard({'Yellow': 2})], [], [], 0)
         elif position == 4:
-            return cls(name, {'Yellow': 3, 'Green': 1, 'Blue': 0, 'Pink': 0}, {UpgradeCard(2), CrystalCard({'Yellow': 2})}, set(), [], 0)
+            return cls(name, {'Yellow': 3, 'Green': 1, 'Blue': 0, 'Pink': 0}, [UpgradeCard(2), CrystalCard({'Yellow': 2})], [], [], 0)
 
     def acquire(self, card):
         card_position = cards.index(card)
@@ -78,7 +78,7 @@ class Player:
 
 
     def rest(self):
-        self.active_cards = self.active_cards.union(self.inactive_cards)
+        self.active_cards = self.active_cards + self.inactive_cards
 
     def __str__(self):
         return self.name
@@ -105,7 +105,9 @@ class Player:
         return True
     
     def play(self, card):
-        pass
+        if isinstance(card, CrystalCard):
+            for crystal in card.crystals:
+                self.inventory[crystal] += card.crystals[crystal]
     
 
 
@@ -199,7 +201,7 @@ while True:
             elif event.key == pygame.K_2:
                 players[move].acquire(cards[1])
             elif event.key == pygame.K_3:
-                players[move].acquire(cards[0])
+                players[move].play(players[move].active_cards)
             elif event.key == pygame.K_4:
                 pass
             elif event.key == pygame.K_i:
