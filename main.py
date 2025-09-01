@@ -54,7 +54,7 @@ class Player:
                 self.inventory[freebie] += freebies[card_position][freebie]
             freebies[card_position] = {'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}
 
-            self.active_cards.add(card)
+            self.active_cards.append(card)
             cards.remove(card)
             print('Successfully added card!')
 
@@ -71,7 +71,7 @@ class Player:
                 self.inventory[freebie] += freebies[card_position][freebie]
             freebies[card_position] = {'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}
 
-            self.active_cards.add(card)
+            self.active_cards.append(card)
             cards.remove(card)
             print('Successfully added card!')
 
@@ -79,6 +79,9 @@ class Player:
 
     def rest(self):
         self.active_cards = self.active_cards + self.inactive_cards
+        self.inactive_cards = []
+        print('Successfully rested!')
+        return True
 
     def __str__(self):
         return self.name
@@ -101,13 +104,30 @@ class Player:
             self.points += 1
             
         golems.remove(golem)
-        print('Successfully purchased golem!')
+        print('Successfully purchased Golem!')
         return True
     
     def play(self, card):
         if isinstance(card, CrystalCard):
             for crystal in card.crystals:
                 self.inventory[crystal] += card.crystals[crystal]
+            self.inactive_cards.append(card)
+            self.active_cards.remove(card)
+            print('Successfully used Crystal Card!')
+            return True
+        elif isinstance(card, TradeCard):
+            for crystal in card.cost_crystals:
+                if self.inventory[crystal] < card.cost_crystals[crystal]:
+                    print('Insufficient Crystals!')
+                    return False
+            for crystal in card.cost_crystals:
+                self.inventory[crystal] -= card.cost_crystals[crystal]
+            for crystal in card.gain_crystals:
+                self.inventory[crystal] += card.gain_crystals[crystal]
+            print('Succesfully used Trade Card!')
+            self.inactive_cards.append(card)
+            self.active_cards.remove(card)
+            return True
     
 
 
@@ -153,7 +173,7 @@ golems = [
 ]
 
 cards = [
-    CrystalCard({'Green': 1}),
+    TradeCard({'Yellow': 2}, {'Green': 2}),
     CrystalCard({'Yellow': 4}),
     CrystalCard({'Pink': 1}),
     CrystalCard({'Blue': 1}),
@@ -199,14 +219,15 @@ while True:
                 players[move].buy_golem(golems[1])
                 print(players[move].points)
             elif event.key == pygame.K_2:
-                players[move].acquire(cards[1])
+                players[move].acquire(cards[0])
             elif event.key == pygame.K_3:
-                players[move].play(players[move].active_cards)
+                players[move].play(players[move].active_cards[2])
             elif event.key == pygame.K_4:
-                pass
+                players[move].rest()
             elif event.key == pygame.K_i:
                 print(players[move].inventory)
                 print(players[move].active_cards)
+                print(players[move].inactive_cards)
                 print(players[move].points)
             
 
