@@ -8,25 +8,28 @@ class MerchantCard:
 
 
 class CrystalCard(MerchantCard):
-    def __init__(self, crystals):
+    def __init__(self, crystals, image):
         self.crystals = crystals
+        self.image = image
 
     def __str__(self):
         return str(self.crystals)    
 
 
 class UpgradeCard(MerchantCard):
-    def __init__(self, num_upgrades):
+    def __init__(self, num_upgrades, image):
         self.num_upgrades = num_upgrades
+        self.image = image
     
     def __str__(self):
         return f'{self.num_upgrades} upgrade card'
 
 
 class TradeCard(MerchantCard):
-    def __init__(self, cost_crystals, gain_crystals):
+    def __init__(self, cost_crystals, gain_crystals, image):
         self.cost_crystals = cost_crystals
         self.gain_crystals = gain_crystals
+        self.image = image
 
 
 class Player:
@@ -41,11 +44,11 @@ class Player:
     @classmethod
     def from_name(cls, name, position):
         if position == 1:
-            return cls(name, {'Yellow': 3, 'Green': 0, 'Blue': 0, 'Pink': 0}, [UpgradeCard(2), CrystalCard({'Yellow': 2})], [], [], 0)
+            return cls(name, {'Yellow': 3, 'Green': 0, 'Blue': 0, 'Pink': 0}, [UpgradeCard(2, ""), CrystalCard({'Yellow': 2}, "")], [], [], 0)
         elif position in [2, 3]:
-            return cls(name, {'Yellow': 4, 'Green': 0, 'Blue': 0, 'Pink': 0}, [UpgradeCard(2), CrystalCard({'Yellow': 2})], [], [], 0)
+            return cls(name, {'Yellow': 4, 'Green': 0, 'Blue': 0, 'Pink': 0}, [UpgradeCard(2, ""), CrystalCard({'Yellow': 2}, "")], [], [], 0)
         elif position == 4:
-            return cls(name, {'Yellow': 3, 'Green': 1, 'Blue': 0, 'Pink': 0}, [UpgradeCard(2), CrystalCard({'Yellow': 2})], [], [], 0)
+            return cls(name, {'Yellow': 3, 'Green': 1, 'Blue': 0, 'Pink': 0}, [UpgradeCard(2, ""), CrystalCard({'Yellow': 2}, "")], [], [], 0)
 
     def acquire(self, card):
         card_position = cards.index(card)
@@ -176,20 +179,56 @@ screen_height = 1080
 screen = pygame.display.set_mode((screen_width, screen_height), pygame.RESIZABLE)
 pygame.display.set_caption("Century: Golem Edition")
 clock = pygame.time.Clock()
-test_font_1 = pygame.font.Font(None, 90)
-test_font_2 = pygame.font.Font(None, 60)
+test_font_1 = pygame.font.Font(None, 110)
+test_font_2 = pygame.font.Font(None, 80)
 
 board_surface = pygame.image.load('Graphics/Background.jpg').convert()
 
 
 merchant_surf = pygame.image.load('Graphics/Merchant_Card_Back.png').convert_alpha()
-merchant_rect = merchant_surf.get_rect(topleft = (1529, 522))
+merchant_rect = merchant_surf.get_rect(topleft = (1650, 480))
 
 golem_surf = pygame.image.load('Graphics/Golem_Card_Back.png').convert_alpha()
-golem_rect = golem_surf.get_rect(topleft = (1529, 122))
+golem_rect = golem_surf.get_rect(topleft = (1650, 80))
 
 caravan_surf = pygame.image.load('Graphics/Caravan_Card_Back.png').convert_alpha()
-caravan_rect = caravan_surf.get_rect(bottomleft = (70, 1050))
+caravan_rect = caravan_surf.get_rect(bottomleft = (30, 1100))
+
+merchant_surf6 = pygame.image.load('Graphics/Merchant_Card_Back.png').convert_alpha()
+merchant_rect6 = merchant_surf6.get_rect(topleft = (1650-220*1, 480))
+
+merchant_surf5 = pygame.image.load('Graphics/Merchant_Card_Back.png').convert_alpha()
+merchant_rect5 = merchant_surf5.get_rect(topleft = (1650-220*2, 480))
+
+merchant_surf4 = pygame.image.load('Graphics/Merchant_Card_Back.png').convert_alpha()
+merchant_rect4 = merchant_surf4.get_rect(topleft = (1650-220*3, 480))
+
+merchant_surf3 = pygame.image.load('Graphics/Merchant_Card_Back.png').convert_alpha()
+merchant_rect3 = merchant_surf3.get_rect(topleft = (1650-220*4, 480))
+
+merchant_surf2 = pygame.image.load('Graphics/Merchant_Card_Back.png').convert_alpha()
+merchant_rect2 = merchant_surf2.get_rect(topleft = (1650-220*5, 480))
+
+merchant_surf1 = pygame.image.load('Graphics/Merchant_Card_Back.png').convert_alpha()
+merchant_rect1 = merchant_surf1.get_rect(topleft = (1650-220*6, 480))
+
+golem_surf5 = pygame.image.load('Graphics/Golem_Card_Back.png').convert_alpha()
+golem_rect5 = golem_surf5.get_rect(topleft = (1650-220*1, 80))
+
+golem_surf4 = pygame.image.load('Graphics/Golem_Card_Back.png').convert_alpha()
+golem_rect4 = golem_surf4.get_rect(topleft = (1650-220*2, 80))
+
+golem_surf3 = pygame.image.load('Graphics/Golem_Card_Back.png').convert_alpha()
+golem_rect3 = golem_surf3.get_rect(topleft = (1650-220*3, 80))
+
+golem_surf2 = pygame.image.load('Graphics/Golem_Card_Back.png').convert_alpha()
+golem_rect2 = golem_surf2.get_rect(topleft = (1650-220*4, 80))
+
+golem_surf1 = pygame.image.load('Graphics/Golem_Card_Back.png').convert_alpha()
+golem_rect1 = golem_surf1.get_rect(topleft = (1650-220*5, 80))
+
+
+
 
 #(Yellow --> Green --> Blue --> Pink).
 
@@ -212,11 +251,11 @@ golems = [
 ]
 
 cards = [
-    TradeCard({'Yellow': 2}, {'Green': 2}),
-    CrystalCard({'Yellow': 4}),
-    CrystalCard({'Pink': 1}),
-    CrystalCard({'Blue': 1}),
-    CrystalCard({'Green': 2}),
+    TradeCard({'Yellow': 2}, {'Green': 2}, ""),
+    CrystalCard({'Yellow': 4}, ""),
+    CrystalCard({'Pink': 1}, ""),
+    CrystalCard({'Blue': 1}, ""),
+    CrystalCard({'Green': 2}, ""),
 ]
 
 freebies = [
@@ -281,12 +320,25 @@ while True:
     screen.blit(board_surface, (0,0))
     screen.blit(turn_text_surface, (60,50))
     screen.blit(move_text_surface, (60, 140))
-    merchant_rect.x-=5
+    #merchant_rect.x-=5
     if merchant_rect.right <= 0:
         merchant_rect.left = 1920
     screen.blit(merchant_surf, merchant_rect)
     screen.blit(golem_surf, golem_rect)
     screen.blit(caravan_surf, caravan_rect)
+    screen.blit(merchant_surf1, merchant_rect1)
+    screen.blit(merchant_surf2, merchant_rect2)
+    screen.blit(merchant_surf3, merchant_rect3)
+    screen.blit(merchant_surf4, merchant_rect4)
+    screen.blit(merchant_surf5, merchant_rect5)
+    screen.blit(merchant_surf6, merchant_rect6)
+    screen.blit(golem_surf1, golem_rect1)
+    screen.blit(golem_surf2, golem_rect2)
+    screen.blit(golem_surf3, golem_rect3)
+    screen.blit(golem_surf4, golem_rect4)
+    screen.blit(golem_surf5, golem_rect5)
+    pygame.draw.circle(screen, (137,55,39), (663, 50), 30)
+    pygame.draw.circle(screen, (113,112,110), (882, 50), 30)
 
     pygame.display.update()
     clock.tick(60)
