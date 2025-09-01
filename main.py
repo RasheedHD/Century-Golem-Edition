@@ -80,15 +80,21 @@ class Player:
 
 
     def rest(self):
-        self.active_cards = self.active_cards + self.inactive_cards
-        self.inactive_cards = []
-        print('Successfully rested!')
-        return True
+        if self.inactive_cards:
+            self.active_cards = self.active_cards + self.inactive_cards
+            self.inactive_cards = []
+            print('Successfully rested!')
+            return True
+        else:
+            print('No inactive cards!')
+            return False
 
     def __str__(self):
         return self.name
     
     def buy_golem(self, golem):
+        global copper_coins
+        global silver_coins
         for crystal in golem.crystals:
             if self.inventory[crystal] < golem.crystals[crystal]:
                 print('Insufficient crystals!')
@@ -106,6 +112,7 @@ class Player:
             self.points += 1
             
         golems.remove(golem)
+        self.golems.append(golem)
         print('Successfully purchased Golem!')
         return True
     
@@ -146,16 +153,22 @@ def move_next():
     global turn_text_surface
     global move
     global turn
+    global final_turn
     if move != 3:
                 move += 1
                 move_text_surface = test_font_2.render(f"{players[move]}'s move", True, 'White')
     else:
-        move = 0
-        turn += 1
-        move_text_surface = test_font_2.render(f"{players[move]}'s move", True, 'White')
-        turn_text_surface = test_font_1.render(f'Turn {turn}', True, 'White')
+        if not final_turn:
+            move = 0
+            turn += 1
+            move_text_surface = test_font_2.render(f"{players[move]}'s move", True, 'White')
+            turn_text_surface = test_font_1.render(f'Turn {turn}', True, 'White')
+        else:
+            game_over()
 
-        
+def game_over():
+    print('Game over!')
+    exit()
 
 pygame.init()
 screen_width = 1736
@@ -185,8 +198,11 @@ copper_coins = 2 * len(players)
 silver_coins = 2 * len(players)
 
 golems = [
-    Golem({'Yellow': 1, 'Green': 1, 'Blue': 1, 'Pink': 3}, 20),
-    Golem({'Yellow': 2, 'Green': 1}, 6)
+    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 20),
+    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 20),
+    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 20),
+    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 20),
+    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 20),
 ]
 
 cards = [
@@ -213,6 +229,11 @@ freebies = [
 
 turn = 1
 move = 0
+final_turn = False
+if len(players) >= 4:
+    max_golems = 2
+else:
+    max_golems = 6
 turn_text_surface = test_font_1.render(f'Turn {turn}', True, 'White')
 move_text_surface = test_font_2.render(f"{players[move]}'s move", True, 'White')
 while True:
@@ -226,13 +247,15 @@ while True:
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_1:
-                if players[move].buy_golem(golems[1]):
+                if players[move].buy_golem(golems[0]):
+                    if len(players[move].golems) == max_golems:
+                        final_turn = True
                     move_next()
             elif event.key == pygame.K_2:
                 if players[move].acquire(cards[0]):
                     move_next()
             elif event.key == pygame.K_3:
-                if players[move].play(players[move].active_cards[2]):
+                if players[move].play(players[move].active_cards[1]):
                     move_next()
             elif event.key == pygame.K_4:
                 if players[move].rest():
@@ -241,7 +264,10 @@ while True:
                 print(players[move].inventory)
                 print(players[move].active_cards)
                 print(players[move].inactive_cards)
+                print(players[move].golems)
                 print(players[move].points)
+            elif event.key == pygame.K_SPACE:
+                move_next()
             
 
 
