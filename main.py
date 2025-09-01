@@ -270,8 +270,8 @@ freebies = [
 
 #  uncomment later for real shuffling
 
-shuffle(golems)
-shuffle(cards)
+#shuffle(golems)
+#shuffle(cards)
 
 turn = 1
 move = 0
