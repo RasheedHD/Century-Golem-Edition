@@ -179,7 +179,7 @@ clock = pygame.time.Clock()
 test_font_1 = pygame.font.Font(None, 90)
 test_font_2 = pygame.font.Font(None, 60)
 
-board_surface = pygame.image.load('Graphics/Board 2.png').convert()
+board_surface = pygame.image.load('Graphics/Board.png').convert()
 
 
 test_card_surface = pygame.image.load('Graphics/2Gold.png').convert_alpha()
@@ -242,8 +242,8 @@ while True:
             pygame.quit()
             exit()
 
-        if event.type == pygame.MOUSEBUTTONUP:
-            pass
+        if event.type == pygame.MOUSEMOTION:
+            print(pygame.mouse.get_pos())
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_1:
