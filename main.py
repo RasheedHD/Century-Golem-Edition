@@ -57,6 +57,7 @@ class Player:
             self.active_cards.append(card)
             cards.remove(card)
             print('Successfully added card!')
+            return True
 
         else: # This whole thing should be improved to allow any crystal (not just yellows) to be sacrificed to acquire card.
             if card_position > self.inventory['Yellow']:
@@ -74,6 +75,7 @@ class Player:
             self.active_cards.append(card)
             cards.remove(card)
             print('Successfully added card!')
+            return True
 
 
 
@@ -138,6 +140,21 @@ class Golem:
 
     def __str__(self):
         return self.crystals, self.points
+    
+def move_next():
+    global move_text_surface
+    global turn_text_surface
+    global move
+    global turn
+    if move != 3:
+                move += 1
+                move_text_surface = test_font_2.render(f"{players[move]}'s move", True, 'White')
+    else:
+        move = 0
+        turn += 1
+        move_text_surface = test_font_2.render(f"{players[move]}'s move", True, 'White')
+        turn_text_surface = test_font_1.render(f'Turn {turn}', True, 'White')
+
         
 
 pygame.init()
@@ -205,25 +222,21 @@ while True:
             exit()
 
         if event.type == pygame.MOUSEBUTTONUP:
-            if move != 3:
-                move += 1
-                move_text_surface = test_font_2.render(f"{players[move]}'s move", True, 'White')
-            else:
-                move = 0
-                turn += 1
-                move_text_surface = test_font_2.render(f"{players[move]}'s move", True, 'White')
-                turn_text_surface = test_font_1.render(f'Turn {turn}', True, 'White')
+            pass
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_1:
-                players[move].buy_golem(golems[1])
-                print(players[move].points)
+                if players[move].buy_golem(golems[1]):
+                    move_next()
             elif event.key == pygame.K_2:
-                players[move].acquire(cards[0])
+                if players[move].acquire(cards[0]):
+                    move_next()
             elif event.key == pygame.K_3:
-                players[move].play(players[move].active_cards[2])
+                if players[move].play(players[move].active_cards[2]):
+                    move_next()
             elif event.key == pygame.K_4:
-                players[move].rest()
+                if players[move].rest():
+                    move_next()
             elif event.key == pygame.K_i:
                 print(players[move].inventory)
                 print(players[move].active_cards)
