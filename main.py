@@ -287,8 +287,8 @@ while True:
             pygame.quit()
             exit()
 
-        if event.type == pygame.MOUSEMOTION:
-            print(pygame.mouse.get_pos())
+        #if event.type == pygame.MOUSEMOTION:
+        #    print(pygame.mouse.get_pos())
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_1:
