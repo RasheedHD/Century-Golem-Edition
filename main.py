@@ -234,8 +234,8 @@ golem_rect1 = golem_surf1.get_rect(topleft = (1650-220*5, 80))
 #(Yellow --> Green --> Blue --> Pink).
 
 players = [
-    Player.from_name('Ali', 1),
-    Player.from_name('Rasheed', 2),
+    Player.from_name('Al', 1),
+    Player.from_name('Rash', 2),
     Player.from_name('P3', 3),
     Player.from_name('P4', 4)
 ]
