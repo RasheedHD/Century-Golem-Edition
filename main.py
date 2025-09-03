@@ -45,7 +45,7 @@ class Player:
     @classmethod
     def from_name(cls, name, position):
         if position == 1:
-            return cls(name, {'Yellow': 3, 'Green': 0, 'Blue': 0, 'Pink': 0}, [UpgradeCard(2, ""), CrystalCard({'Yellow': 2}, "")], [], [], 0)
+            return cls(name, {'Yellow': 2, 'Green': 4, 'Blue': 1, 'Pink': 3}, [UpgradeCard(3, ""), CrystalCard({'Yellow': 2}, "")], [], [], 0)
         elif position in [2, 3]:
             return cls(name, {'Yellow': 4, 'Green': 0, 'Blue': 0, 'Pink': 0}, [UpgradeCard(2, ""), CrystalCard({'Yellow': 2}, "")], [], [], 0)
         elif position == 4:
@@ -143,35 +143,58 @@ class Player:
             return True
         
         elif isinstance(card, UpgradeCard):
-            if len(selected_crystals) != card.num_upgrades:
-                print(f'Please select {card.num_upgrades} cards!')
+            if len(selected_crystals) > card.num_upgrades or len(selected_crystals) == 0:
+                print(f'Please select {card.num_upgrades} cards or less! (Not zero)')
                 selected_crystals.clear()
                 return False
             temp_inventory = self.inventory.copy()
-            for selected_crystal_pos in selected_crystals:
-                c=0
-                for crystal in temp_inventory:
-                    for unit in range(temp_inventory[crystal]):
-                        if selected_crystal_pos == c:
-                            temp_inventory[crystal] -= 1
-                            if crystal == 'Yellow':
-                                temp_inventory['Green'] += 1
-                            elif crystal == 'Green':
-                                temp_inventory['Blue'] += 1
-                            elif crystal == 'Blue':
-                                temp_inventory['Pink'] += 1
-                        c+=1
-            self.inventory = temp_inventory
+            round_finished = False
+            if len(selected_crystals) == card.num_upgrades:
+                for selected_crystal_pos in selected_crystals:
+                    c=0
+                    for crystal in self.inventory:
+                        for unit in range(self.inventory[crystal]):
+                            if selected_crystal_pos == c:
+                                temp_inventory[crystal] -= 1
+                                if crystal == 'Yellow':
+                                    temp_inventory['Green'] += 1
+                                elif crystal == 'Green':
+                                    temp_inventory['Blue'] += 1
+                                elif crystal == 'Blue':
+                                    temp_inventory['Pink'] += 1
+                            c+=1
+            elif len(selected_crystals) == card.num_upgrades-1:
+                for selected_crystal_pos in selected_crystals:
+                    c=0
+                    for crystal in self.inventory:
+                        for unit in range(self.inventory[crystal]):
+                            if selected_crystal_pos == c:
+                                temp_inventory[crystal] -= 1
+                                if round_finished:
+                                    round_finished = False
+                                    if crystal == 'Yellow':
+                                        temp_inventory['Green'] += 1
+                                    elif crystal == 'Green':
+                                        temp_inventory['Blue'] += 1
+                                    elif crystal == 'Blue':
+                                        temp_inventory['Pink'] += 1
+                                else:
+                                    if crystal == 'Yellow':
+                                        temp_inventory['Blue'] += 1
+                                    elif crystal == 'Green':
+                                        temp_inventory['Pink'] += 1
+                                    round_finished = True
+                            c+=1
+            else:
+                temp_inventory['Yellow'] -= 1
+                temp_inventory['Pink'] += 1
+            self.inventory = temp_inventory.copy()
             selected_crystals.clear()
             self.inactive_cards.append(card)
             #self.active_cards.remove(card)
-            print('Successfully upgraded cards!')
+            print('Successfully upgraded crystals!')
             #return True
                 
-                    
-                
-    
-
 
 class Golem:
     def __init__(self, crystals, points):
@@ -226,8 +249,13 @@ def select():
         distance = dist(pos, circle_pos)
         if distance <= 20:
             curr_circle_clicked = crystal_positions.index(circle_pos)
-            print(f"Crystal {curr_circle_clicked} selected!")
-            selected_crystals.append(curr_circle_clicked)
+            if curr_circle_clicked in selected_crystals:
+                print("Crystal already selected!")
+            else:   
+                print(f"Crystal {curr_circle_clicked} selected!")
+                selected_crystals.append(curr_circle_clicked)
+    selected_crystals.sort()
+            
 
     
 
