@@ -1,6 +1,7 @@
 import pygame
 from sys import exit
 from random import shuffle
+from math import dist
 
 class MerchantCard:
     def __init__(self):
@@ -136,10 +137,39 @@ class Player:
                 self.inventory[crystal] -= card.cost_crystals[crystal]
             for crystal in card.gain_crystals:
                 self.inventory[crystal] += card.gain_crystals[crystal]
-            print('Succesfully used Trade Card!')
             self.inactive_cards.append(card)
             self.active_cards.remove(card)
+            print('Succesfully used Trade Card!')
             return True
+        
+        elif isinstance(card, UpgradeCard):
+            if len(selected_crystals) != card.num_upgrades:
+                print(f'Please select {card.num_upgrades} cards!')
+                selected_crystals.clear()
+                return False
+            temp_inventory = self.inventory.copy()
+            for selected_crystal_pos in selected_crystals:
+                c=0
+                for crystal in temp_inventory:
+                    for unit in range(temp_inventory[crystal]):
+                        if selected_crystal_pos == c:
+                            temp_inventory[crystal] -= 1
+                            if crystal == 'Yellow':
+                                temp_inventory['Green'] += 1
+                            elif crystal == 'Green':
+                                temp_inventory['Blue'] += 1
+                            elif crystal == 'Blue':
+                                temp_inventory['Pink'] += 1
+                        c+=1
+            self.inventory = temp_inventory
+            selected_crystals.clear()
+            self.inactive_cards.append(card)
+            #self.active_cards.remove(card)
+            print('Successfully upgraded cards!')
+            #return True
+                
+                    
+                
     
 
 
@@ -188,6 +218,18 @@ def load_crystals(player):
             coordinate = crystal_positions[i]    
             pygame.draw.circle(screen, color, coordinate, 20)
             i+=1
+
+
+def select():
+    pos = pygame.mouse.get_pos()
+    for circle_pos in crystal_positions:
+        distance = dist(pos, circle_pos)
+        if distance <= 20:
+            curr_circle_clicked = crystal_positions.index(circle_pos)
+            print(f"Crystal {curr_circle_clicked} selected!")
+            selected_crystals.append(curr_circle_clicked)
+
+    
 
 pygame.init()
 screen_width = 1920
@@ -245,10 +287,6 @@ golem_surf1 = pygame.image.load('Graphics/Golem_Card_Back.png').convert_alpha()
 golem_rect1 = golem_surf1.get_rect(topleft = (1650-220*5, 80))
 
 
-
-
-#(Yellow --> Green --> Blue --> Pink).
-
 players = [
     Player.from_name('P1', 1),
     Player.from_name('P2', 2),
@@ -297,6 +335,8 @@ crystal_positions = [
     (98+67*4, 1012),
 ]
 
+selected_crystals = []
+
 #  uncomment later for real shuffling
 
 #shuffle(golems)
@@ -330,7 +370,7 @@ while True:
                 if players[move].acquire(cards[0]):
                     move_next()
             elif event.key == pygame.K_3:
-                if players[move].play(players[move].active_cards[1]):
+                if players[move].play(players[move].active_cards[0]):
                     move_next()
             elif event.key == pygame.K_4:
                 if players[move].rest():
@@ -343,9 +383,11 @@ while True:
                 print(players[move].points)
             elif event.key == pygame.K_SPACE:
                 move_next()
+
+        if event.type == pygame.MOUSEBUTTONUP:
+            select()
+            print(selected_crystals)
             
-
-
     
     screen.blit(board_surface, (0,0))
     screen.blit(turn_text_surface, (60,50))
