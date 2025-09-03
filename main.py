@@ -173,6 +173,22 @@ def game_over():
     print('Game over!')
     exit()
 
+def load_crystals(player):
+    i=0
+    for crystal, crystal_count in player.inventory.items():
+        for x in range(crystal_count):
+            if crystal == 'Yellow':
+                color = (255, 255, 0)
+            elif crystal == 'Green':
+                color = (0, 255, 0)
+            elif crystal == 'Blue':
+                color = (64, 224, 208)
+            else:
+                color = (253, 61, 181)
+            coordinate = crystal_positions[i]    
+            pygame.draw.circle(screen, color, coordinate, 20)
+            i+=1
+
 pygame.init()
 screen_width = 1920
 screen_height = 1080
@@ -268,6 +284,19 @@ freebies = [
     {'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0},
 ]
 
+crystal_positions = [
+    (98, 944),
+    (98+67*1, 945),
+    (98+67*2, 946),
+    (98+67*3, 947),
+    (98+67*4, 948),
+    (98, 1006),
+    (98+67*1, 1007),
+    (98+67*2, 1008),
+    (98+67*3, 1010),
+    (98+67*4, 1012),
+]
+
 #  uncomment later for real shuffling
 
 #shuffle(golems)
@@ -317,7 +346,7 @@ while True:
             
 
 
-
+    
     screen.blit(board_surface, (0,0))
     screen.blit(turn_text_surface, (60,50))
     screen.blit(move_text_surface, (60, 140))
@@ -340,6 +369,7 @@ while True:
     screen.blit(golem_surf5, golem_rect5)
     pygame.draw.circle(screen, (137,55,39), (663, 50), 30)
     pygame.draw.circle(screen, (113,112,110), (882, 50), 30)
+    load_crystals(players[move])
 
     pygame.display.update()
     clock.tick(60)
