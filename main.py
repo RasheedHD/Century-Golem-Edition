@@ -142,7 +142,7 @@ class Player:
             print('Succesfully used Trade Card!')
             return True
         
-        elif isinstance(card, UpgradeCard):
+        elif isinstance(card, UpgradeCard): #Input validation needs to be implemented
             if len(selected_crystals) > card.num_upgrades or len(selected_crystals) == 0:
                 print(f'Please select {card.num_upgrades} cards or less! (Not zero)')
                 selected_crystals.clear()
