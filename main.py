@@ -50,6 +50,9 @@ class Player:
             return cls(name, {'Yellow': 4, 'Green': 0, 'Blue': 0, 'Pink': 0}, [UpgradeCard(2, ""), CrystalCard({'Yellow': 2}, "")], [], [], 0)
         elif position == 4:
             return cls(name, {'Yellow': 3, 'Green': 1, 'Blue': 0, 'Pink': 0}, [UpgradeCard(2, ""), CrystalCard({'Yellow': 2}, "")], [], [], 0)
+        
+    def add_crystals(self, crystals_to_add):
+        pass
 
     def acquire(self, card):
         card_position = cards.index(card)
