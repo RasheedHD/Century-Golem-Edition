@@ -45,20 +45,20 @@ class Player:
     @classmethod
     def from_name(cls, name, position):
         if position == 1:
-            return cls(name, {'Yellow': 2, 'Green': 4, 'Blue': 1, 'Pink': 3}, [UpgradeCard(3, ""), CrystalCard({'Yellow': 2}, "")], [], [], 0)
+            return cls(name, {'Yellow': 3, 'Green': 0, 'Blue': 0, 'Pink': 0}, [UpgradeCard(3, ""), CrystalCard({'Yellow': 2}, "")], [], [], 0)
         elif position in [2, 3]:
             return cls(name, {'Yellow': 4, 'Green': 0, 'Blue': 0, 'Pink': 0}, [UpgradeCard(2, ""), CrystalCard({'Yellow': 2}, "")], [], [], 0)
         elif position == 4:
-            return cls(name, {'Yellow': 3, 'Green': 1, 'Blue': 0, 'Pink': 0}, [UpgradeCard(2, ""), CrystalCard({'Yellow': 2}, "")], [], [], 0)
+            return cls(name, {'Yellow': 3, 'Green': 1, 'Blue': 0, 'Pink': 0}, [UpgradeCard(3, ""), CrystalCard({'Yellow': 2}, "")], [], [], 0)
         
     def add_crystals(self, crystals_to_add):
-        pass
+        for crystal in crystals_to_add:
+            self.inventory[crystal] += crystals_to_add[crystal]
 
     def acquire(self, card):
         card_position = cards.index(card)
         if card_position == 0:
-            for freebie in freebies[card_position]:
-                self.inventory[freebie] += freebies[card_position][freebie]
+            self.add_crystals(freebies[card_position])
             freebies[card_position] = {'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}
 
             self.active_cards.append(card)
@@ -257,7 +257,7 @@ def select():
             else:   
                 print(f"Crystal {curr_circle_clicked} selected!")
                 selected_crystals.append(curr_circle_clicked)
-    selected_crystals.sort()
+    
             
 
     
@@ -345,7 +345,7 @@ cards = [
 ]
 
 freebies = [
-    {'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0},
+    {'Yellow': 2, 'Green': 0, 'Blue': 0, 'Pink': 0},
     {'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0},
     {'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0},
     {'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0},
