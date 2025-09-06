@@ -226,6 +226,18 @@ def move_next():
             game_over()
 
 def game_over():
+    points = []
+    leaderboard = []
+    for player in players:
+        points.append(player.points)
+    points.sort(reverse=True)
+    for score in points:
+        for player in players:
+            if score == player.points:
+                leaderboard.append(player)
+                players.remove(player)
+    for player in leaderboard:
+        print(f'{leaderboard.index(player)+1}: {player.name} - {player.points} points ')
     print('Game over!')
     exit()
 
@@ -330,10 +342,10 @@ silver_coins = 2 * len(players)
 
 golems = [
     Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 20),
-    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 20),
-    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 20),
-    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 20),
-    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 20),
+    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 8),
+    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 15),
+    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 28),
+    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 3),
 ]
 
 cards = [
