@@ -397,6 +397,7 @@ selected_crystals = []
 
 #shuffle(golems)
 #shuffle(cards)
+#shuffle(players)
 
 turn = 1
 move = 0
@@ -441,8 +442,13 @@ while True:
                 move_next()
 
         if event.type == pygame.MOUSEBUTTONUP:
-            select()
-            print(selected_crystals)
+            if event.button == 1:
+                select()
+                print(selected_crystals)
+            elif event.button == 3:
+                selected_crystals = []
+                print('Deselected crystals!')
+
             
     
     screen.blit(board_surface, (0,0))
