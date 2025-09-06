@@ -34,22 +34,23 @@ class TradeCard(MerchantCard):
 
 
 class Player:
-    def __init__(self, name, inventory, active_cards, inactive_cards, golems, points):
+    def __init__(self, name, inventory, active_cards, inactive_cards, golems, points, position):
         self.name = name
         self.inventory = inventory
         self.active_cards = active_cards
         self.inactive_cards = inactive_cards
         self.golems = golems
         self.points = points
+        self.position = position
 
     @classmethod
     def from_name(cls, name, position):
         if position == 1:
-            return cls(name, {'Yellow': 3, 'Green': 0, 'Blue': 0, 'Pink': 0}, [UpgradeCard(3, ""), CrystalCard({'Yellow': 2}, "")], [], [], 0)
+            return cls(name, {'Yellow': 3, 'Green': 0, 'Blue': 0, 'Pink': 0}, [UpgradeCard(3, ""), CrystalCard({'Yellow': 2}, "")], [], [], 0, position)
         elif position in [2, 3]:
-            return cls(name, {'Yellow': 4, 'Green': 0, 'Blue': 0, 'Pink': 0}, [UpgradeCard(2, ""), CrystalCard({'Yellow': 2}, "")], [], [], 0)
-        elif position == 4:
-            return cls(name, {'Yellow': 3, 'Green': 1, 'Blue': 0, 'Pink': 0}, [UpgradeCard(3, ""), CrystalCard({'Yellow': 2}, "")], [], [], 0)
+            return cls(name, {'Yellow': 4, 'Green': 0, 'Blue': 0, 'Pink': 0}, [UpgradeCard(2, ""), CrystalCard({'Yellow': 2}, "")], [], [], 0, position)
+        elif position in [4, 5]:
+            return cls(name, {'Yellow': 3, 'Green': 1, 'Blue': 0, 'Pink': 0}, [UpgradeCard(3, ""), CrystalCard({'Yellow': 2}, "")], [], [], 0, position)
         
     def add_crystals(self, crystals_to_add):
         for crystal in crystals_to_add:
@@ -228,14 +229,26 @@ def move_next():
 def game_over():
     points = []
     leaderboard = []
+    max = -1
+    players_copy = players.copy()
     for player in players:
         points.append(player.points)
     points.sort(reverse=True)
     for score in points:
-        for player in players:
+        for player in players_copy:
             if score == player.points:
                 leaderboard.append(player)
-                players.remove(player)
+                players_copy.remove(player)
+    if leaderboard[0].points == leaderboard[1].points:
+        winning_score = leaderboard[0].points
+        for player in players:
+            if player.points == winning_score and player.position > max:
+                max = player.position
+                max_player = player
+        maxdex = leaderboard.index(max_player)
+        temp = leaderboard[0]
+        leaderboard[0] = max_player
+        leaderboard[maxdex] = temp
     for player in leaderboard:
         print(f'{leaderboard.index(player)+1}: {player.name} - {player.points} points ')
     print('Game over!')
@@ -341,11 +354,11 @@ copper_coins = 2 * len(players)
 silver_coins = 2 * len(players)
 
 golems = [
-    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 20),
-    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 8),
     Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 15),
-    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 28),
-    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 3),
+    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 10),
+    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 15),
+    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 15),
+    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 20),
 ]
 
 cards = [
@@ -389,7 +402,7 @@ turn = 1
 move = 0
 final_turn = False
 if len(players) >= 4:
-    max_golems = 2
+    max_golems = 1
 else:
     max_golems = 6
 turn_text_surface = test_font_1.render(f'Turn {turn}', True, 'White')
