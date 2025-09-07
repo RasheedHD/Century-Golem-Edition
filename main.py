@@ -46,7 +46,7 @@ class Player:
     @classmethod
     def from_name(cls, name, position):
         if position == 1:
-            return cls(name, {'Yellow': 3, 'Green': 0, 'Blue': 0, 'Pink': 0}, [UpgradeCard(3, ""), CrystalCard({'Yellow': 2}, "")], [], [], 0, position)
+            return cls(name, {'Yellow': 1, 'Green': 2, 'Blue': 0, 'Pink': 1}, [UpgradeCard(3, ""), CrystalCard({'Yellow': 2}, "")], [], [], 0, position)
         elif position in [2, 3]:
             return cls(name, {'Yellow': 4, 'Green': 0, 'Blue': 0, 'Pink': 0}, [UpgradeCard(2, ""), CrystalCard({'Yellow': 2}, "")], [], [], 0, position)
         elif position in [4, 5]:
@@ -57,6 +57,7 @@ class Player:
             self.inventory[crystal] += crystals_to_add[crystal]
 
     def acquire(self, card):
+        global selected_crystals
         card_position = cards.index(card)
         if card_position == 0:
             self.add_crystals(freebies[card_position])
@@ -67,14 +68,25 @@ class Player:
             print('Successfully added card!')
             return True
 
-        else: # This whole thing should be improved to allow any crystal (not just yellows) to be sacrificed to acquire card.
-            if card_position > self.inventory['Yellow']:
+        else:
+            if card_position > sum(self.inventory.values()):
                 print('Not enough crystals to acquire card!')
                 return False
-            
-            for sacrificial_crystal in range(card_position):
-                freebies[card_position - 1]['Yellow'] += 1
-                self.inventory['Yellow'] -= 1
+            temp_inventory = self.inventory.copy()
+            self.add_crystals(freebies[card_position - 1])
+            if len(selected_crystals) == card_position:
+                for selected_crystal_pos in selected_crystals:
+                        c=0
+                        for crystal in self.inventory:
+                            for unit in range(self.inventory[crystal]):
+                                if selected_crystal_pos == c:
+                                    temp_inventory[crystal] -= 1
+                                c+=1
+                self.inventory = temp_inventory
+            else:
+                selected_crystals = []
+                print("Please select a valid number of crystals!")
+                return False
 
             for freebie in freebies[card_position]:
                 self.inventory[freebie] += freebies[card_position][freebie]
@@ -356,7 +368,7 @@ silver_coins = 2 * len(players)
 golems = [
     Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 15),
     Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 10),
-    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 15),
+    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 5),
     Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 15),
     Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 20),
 ]
@@ -370,10 +382,10 @@ cards = [
 ]
 
 freebies = [
-    {'Yellow': 2, 'Green': 0, 'Blue': 0, 'Pink': 0},
     {'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0},
     {'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0},
     {'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0},
+    {'Yellow': 1, 'Green': 0, 'Blue': 3, 'Pink': 0},
     {'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0},
     {'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0},
 ]
@@ -424,7 +436,7 @@ while True:
                         final_turn = True
                     move_next()
             elif event.key == pygame.K_2:
-                if players[move].acquire(cards[0]):
+                if players[move].acquire(cards[3]):
                     move_next()
             elif event.key == pygame.K_3:
                 if players[move].play(players[move].active_cards[0]):
