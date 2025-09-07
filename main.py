@@ -299,7 +299,7 @@ def select():
 
     
 
-pygame.init()
+pygame.init() #When finished with everything, switch back width and height to be 1199x630 so main menu appears upon startup
 screen_width = 1920
 screen_height = 1080
 screen = pygame.display.set_mode((screen_width, screen_height), pygame.RESIZABLE)
@@ -310,6 +310,7 @@ test_font_1 = pygame.font.Font(None, 110)
 test_font_2 = pygame.font.Font(None, 80)
 
 board_surface = pygame.image.load('Graphics/Background.jpg').convert()
+main_menu_surface = pygame.image.load('Graphics/Main Menu.png').convert()
 
 
 merchant_surf = pygame.image.load('Graphics/Merchant_Card_Back.png').convert_alpha()
@@ -414,6 +415,7 @@ selected_crystals = []
 turn = 1
 move = 0
 final_turn = False
+main_menu_active = False
 if len(players) >= 4:
     max_golems = 1
 else:
@@ -421,72 +423,96 @@ else:
 turn_text_surface = test_font_1.render(f'Turn {turn}', True, 'White')
 move_text_surface = test_font_2.render(f"{players[move]}'s move", True, 'White')
 while True:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            exit()
+    if not main_menu_active:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
 
-        #if event.type == pygame.MOUSEMOTION:
-        #    print(pygame.mouse.get_pos())
+            #if event.type == pygame.MOUSEMOTION:
+            #    print(pygame.mouse.get_pos())
 
-        if event.type == pygame.KEYUP:
-            if event.key == pygame.K_1:
-                if players[move].buy_golem(golems[0]):
-                    if len(players[move].golems) == max_golems:
-                        final_turn = True
-                    move_next()
-            elif event.key == pygame.K_2:
-                if players[move].acquire(cards[3]):
-                    move_next()
-            elif event.key == pygame.K_3:
-                if players[move].play(players[move].active_cards[0]):
-                    move_next()
-            elif event.key == pygame.K_4:
-                if players[move].rest():
-                    move_next()
-            elif event.key == pygame.K_i:
-                print(players[move].inventory)
-                print(players[move].active_cards)
-                print(players[move].inactive_cards)
-                print(players[move].golems)
-                print(players[move].points)
-            elif event.key == pygame.K_SPACE:
-                move_next()
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_ESCAPE:
+                    screen_width = 1199
+                    screen_height = 630
+                    screen = pygame.display.set_mode((screen_width, screen_height), pygame.RESIZABLE)
+                    main_menu_active = True
 
-        if event.type == pygame.MOUSEBUTTONUP:
-            if event.button == 1:
-                select()
-                print(selected_crystals)
-            elif event.button == 3:
-                selected_crystals = []
-                print('Deselected crystals!')
+                if event.key == pygame.K_1:
+                    if players[move].buy_golem(golems[0]):
+                        if len(players[move].golems) == max_golems:
+                            final_turn = True
+                        move_next()
+                elif event.key == pygame.K_2:
+                    if players[move].acquire(cards[3]):
+                        move_next()
+                elif event.key == pygame.K_3:
+                    if players[move].play(players[move].active_cards[0]):
+                        move_next()
+                elif event.key == pygame.K_4:
+                    if players[move].rest():
+                        move_next()
+                elif event.key == pygame.K_i:
+                    print(players[move].inventory)
+                    print(players[move].active_cards)
+                    print(players[move].inactive_cards)
+                    print(players[move].golems)
+                    print(players[move].points)
+                elif event.key == pygame.K_SPACE:
+                    move_next()
 
+            if event.type == pygame.MOUSEBUTTONUP:
+                if event.button == 1:
+                    select()
+                    print(selected_crystals)
+                elif event.button == 3:
+                    selected_crystals = []
+                    print('Deselected crystals!')
+
+                
+
+        screen.blit(main_menu_surface, (0,0))
+        screen.blit(board_surface, (0,0))
+        screen.blit(turn_text_surface, (60,50))
+        screen.blit(move_text_surface, (60, 140))
+        #merchant_rect.x-=5
+        if merchant_rect.right <= 0:
+            merchant_rect.left = 1920
+        screen.blit(merchant_surf, merchant_rect)
+        screen.blit(golem_surf, golem_rect)
+        screen.blit(caravan_surf, caravan_rect)
+        screen.blit(merchant_surf1, merchant_rect1)
+        screen.blit(merchant_surf2, merchant_rect2)
+        screen.blit(merchant_surf3, merchant_rect3)
+        screen.blit(merchant_surf4, merchant_rect4)
+        screen.blit(merchant_surf5, merchant_rect5)
+        screen.blit(merchant_surf6, merchant_rect6)
+        screen.blit(golem_surf1, golem_rect1)
+        screen.blit(golem_surf2, golem_rect2)
+        screen.blit(golem_surf3, golem_rect3)
+        screen.blit(golem_surf4, golem_rect4)
+        screen.blit(golem_surf5, golem_rect5)
+        pygame.draw.circle(screen, (137,55,39), (663, 50), 30)
+        pygame.draw.circle(screen, (113,112,110), (882, 50), 30)
+        load_crystals(players[move])
+
+        pygame.display.update()
+        clock.tick(60)
+        ###
+    else:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
             
-    
-    screen.blit(board_surface, (0,0))
-    screen.blit(turn_text_surface, (60,50))
-    screen.blit(move_text_surface, (60, 140))
-    #merchant_rect.x-=5
-    if merchant_rect.right <= 0:
-        merchant_rect.left = 1920
-    screen.blit(merchant_surf, merchant_rect)
-    screen.blit(golem_surf, golem_rect)
-    screen.blit(caravan_surf, caravan_rect)
-    screen.blit(merchant_surf1, merchant_rect1)
-    screen.blit(merchant_surf2, merchant_rect2)
-    screen.blit(merchant_surf3, merchant_rect3)
-    screen.blit(merchant_surf4, merchant_rect4)
-    screen.blit(merchant_surf5, merchant_rect5)
-    screen.blit(merchant_surf6, merchant_rect6)
-    screen.blit(golem_surf1, golem_rect1)
-    screen.blit(golem_surf2, golem_rect2)
-    screen.blit(golem_surf3, golem_rect3)
-    screen.blit(golem_surf4, golem_rect4)
-    screen.blit(golem_surf5, golem_rect5)
-    pygame.draw.circle(screen, (137,55,39), (663, 50), 30)
-    pygame.draw.circle(screen, (113,112,110), (882, 50), 30)
-    load_crystals(players[move])
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_SPACE:
+                    screen_width = 1920
+                    screen_height = 1080
+                    screen = pygame.display.set_mode((screen_width, screen_height), pygame.RESIZABLE)
+                    main_menu_active = False
 
-    pygame.display.update()
-    clock.tick(60)
-    ###
+        screen.blit(main_menu_surface, (0,0))
+        pygame.display.update()
+        clock.tick(60)
