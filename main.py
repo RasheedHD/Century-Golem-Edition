@@ -116,6 +116,7 @@ class Player:
     def buy_golem(self, golem):
         global copper_coins
         global silver_coins
+        global silver_coins_slid
         for crystal in golem.crystals:
             if self.inventory[crystal] < golem.crystals[crystal]:
                 print('Insufficient crystals!')
@@ -128,9 +129,14 @@ class Player:
         if golems.index(golem) == 0 and copper_coins > 0:
             copper_coins -= 1
             self.points += 3
-        elif golems.index(golem) == 1 and silver_coins > 0:
+        elif golems.index(golem) == 0 and silver_coins > 0 and silver_coins_slid:
             silver_coins -= 1
             self.points += 1
+        elif (golems.index(golem) == 1 and silver_coins > 0) and (not silver_coins_slid):
+            silver_coins -= 1
+            self.points += 1
+        if copper_coins == 0:
+            silver_coins_slid = True
             
         golems.remove(golem)
         self.golems.append(golem)
@@ -320,7 +326,10 @@ def load_golems():
 def load_merchant_cards():
     i = 0
     for card in cards[:6]:
-        print(i)
+        coordinate = merchant_card_positions[i]
+        merchant_surf = pygame.image.load(card.image)
+        merchant_rect = merchant_surf.get_rect(topleft = coordinate)
+        screen.blit(merchant_surf, merchant_rect)
         i+=1
 
 def select():
@@ -473,8 +482,9 @@ turn = 1
 move = 0
 final_turn = False
 main_menu_active = False
+silver_coins_slid = False
 if len(players) >= 4:
-    max_golems = 1
+    max_golems = 5
 else:
     max_golems = 6
 turn_text_surface = test_font_1.render(f'Turn {turn}', True, 'White')
@@ -486,8 +496,8 @@ while True:
                 pygame.quit()
                 exit()
 
-            if event.type == pygame.MOUSEMOTION:
-                print(pygame.mouse.get_pos())
+            #if event.type == pygame.MOUSEMOTION:
+            #    print(pygame.mouse.get_pos())
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_ESCAPE:
@@ -510,6 +520,12 @@ while True:
                         move_next()
                 elif event.key == pygame.K_4:
                     if players[move].rest() or players[move].remove_excess_crystals():
+                        move_next()
+                elif event.key == pygame.K_5:
+                    if players[move].buy_golem(golems[1]):
+                        if len(players[move].golems) == max_golems:
+                            final_turn = True
+                        
                         move_next()
                 elif event.key == pygame.K_i:
                     print(players[move].inventory)
@@ -552,8 +568,13 @@ while True:
         screen.blit(golem_surf3, golem_rect3)
         screen.blit(golem_surf4, golem_rect4)
         screen.blit(golem_surf5, golem_rect5)
-        pygame.draw.circle(screen, (137,55,39), (663, 50), 30)
-        pygame.draw.circle(screen, (113,112,110), (882, 50), 30)
+        if silver_coins_slid:
+            pygame.draw.circle(screen, (113,112,110), (663, 50), 30)
+        else:
+            pygame.draw.circle(screen, (137,55,39), (663, 50), 30)
+            pygame.draw.circle(screen, (113,112,110), (882, 50), 30)
+            
+       
         load_crystals(players[move])
         #load_golems()
         #load_merchant_cards
