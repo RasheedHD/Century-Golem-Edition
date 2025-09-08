@@ -235,9 +235,10 @@ class Player:
                 
 
 class Golem:
-    def __init__(self, crystals, points):
+    def __init__(self, crystals, points, image):
         self.crystals = crystals
         self.points = points
+        self.image = image
 
     def __str__(self):
         return self.crystals, self.points
@@ -288,7 +289,7 @@ def game_over():
     print('Game over!')
     exit()
 
-def load_crystals(player):
+def load_crystals(player): #For the future, if you want user to be able to remove ANY excess crystals (not just the 10 least valuable ones), possibly add a second page to the caravan. Users can cycle through pages with a key.
     i=0
     for crystal, crystal_count in player.inventory.items():
         for x in range(crystal_count):
@@ -307,6 +308,20 @@ def load_crystals(player):
                 pygame.draw.circle(screen, color, coordinate, 20)
             i+=1
 
+def load_golems():
+    i = 0
+    for golem in golems[:5]:
+        coordinate = golem_positions[i]
+        golem_surf = pygame.image.load(golem.image)
+        golem_rect = golem_surf.get_rect(topleft = coordinate)
+        screen.blit(golem_surf, golem_rect)
+        i+=1
+
+def load_merchant_cards():
+    i = 0
+    for card in cards[:6]:
+        print(i)
+        i+=1
 
 def select():
     pos = pygame.mouse.get_pos()
@@ -319,10 +334,6 @@ def select():
             else:   
                 print(f"Crystal {curr_circle_clicked} selected!")
                 selected_crystals.append(curr_circle_clicked)
-    
-
-
-
     
 
 pygame.init() #When finished with everything, switch back width and height to be 1199x630 so main menu appears upon startup
@@ -339,11 +350,11 @@ board_surface = pygame.image.load('Graphics/Background.jpg').convert()
 main_menu_surface = pygame.image.load('Graphics/Main Menu.png').convert()
 
 
-merchant_surf = pygame.image.load('Graphics/Merchant_Card_Back.png').convert_alpha()
-merchant_rect = merchant_surf.get_rect(topleft = (1650, 480))
+merchant_back_surf = pygame.image.load('Graphics/Merchant_Card_Back.png').convert_alpha()
+merchant_back_rect = merchant_back_surf.get_rect(topleft = (1650, 480))
 
-golem_surf = pygame.image.load('Graphics/Golem_Card_Back.png').convert_alpha()
-golem_rect = golem_surf.get_rect(topleft = (1650, 80))
+golem_back_surf = pygame.image.load('Graphics/Golem_Card_Back.png').convert_alpha()
+golem_back_rect = golem_back_surf.get_rect(topleft = (1650, 80))
 
 caravan_surf = pygame.image.load('Graphics/Caravan_Card_Back.png').convert_alpha()
 caravan_rect = caravan_surf.get_rect(bottomleft = (30, 1100))
@@ -393,11 +404,14 @@ copper_coins = 2 * len(players)
 silver_coins = 2 * len(players)
 
 golems = [
-    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 15),
-    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 10),
-    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 5),
-    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 15),
-    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 20),
+    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 15, ""),
+    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 10, ""),
+    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 5, ""),
+    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 15, ""),
+    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 20, ""),
+    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 20, ""),
+    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 20, ""),
+    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 20, ""),
 ]
 
 cards = [
@@ -430,6 +444,23 @@ crystal_positions = [
     (98+67*4, 1012),
 ]
 
+golem_positions = [
+    (),
+    (),
+    (),
+    (),
+    ()
+]
+
+merchant_card_positions = [
+    (),
+    (),
+    (),
+    (),
+    (),
+    ()
+]
+
 selected_crystals = []
 
 #  uncomment later for real shuffling
@@ -455,8 +486,8 @@ while True:
                 pygame.quit()
                 exit()
 
-            #if event.type == pygame.MOUSEMOTION:
-            #    print(pygame.mouse.get_pos())
+            if event.type == pygame.MOUSEMOTION:
+                print(pygame.mouse.get_pos())
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_ESCAPE:
@@ -488,6 +519,7 @@ while True:
                     print(players[move].points)
                 elif event.key == pygame.K_SPACE:
                     move_next()
+                    #load_golems()
 
             if event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:
@@ -504,10 +536,10 @@ while True:
         screen.blit(turn_text_surface, (60,50))
         screen.blit(move_text_surface, (60, 140))
         #merchant_rect.x-=5
-        if merchant_rect.right <= 0:
-            merchant_rect.left = 1920
-        screen.blit(merchant_surf, merchant_rect)
-        screen.blit(golem_surf, golem_rect)
+        if merchant_back_rect.right <= 0:
+            merchant_back_rect.left = 1920
+        screen.blit(merchant_back_surf, merchant_back_rect)
+        screen.blit(golem_back_surf, golem_back_rect)
         screen.blit(caravan_surf, caravan_rect)
         screen.blit(merchant_surf1, merchant_rect1)
         screen.blit(merchant_surf2, merchant_rect2)
@@ -523,6 +555,8 @@ while True:
         pygame.draw.circle(screen, (137,55,39), (663, 50), 30)
         pygame.draw.circle(screen, (113,112,110), (882, 50), 30)
         load_crystals(players[move])
+        #load_golems()
+        #load_merchant_cards
 
         pygame.display.update()
         clock.tick(60)
