@@ -46,7 +46,7 @@ class Player:
     @classmethod
     def from_name(cls, name, position):
         if position == 1:
-            return cls(name, {'Yellow': 1, 'Green': 2, 'Blue': 0, 'Pink': 1}, [UpgradeCard(3, ""), CrystalCard({'Yellow': 2}, "")], [], [], 0, position)
+            return cls(name, {'Yellow': 3, 'Green': 0, 'Blue': 0, 'Pink': 0}, [UpgradeCard(3, ""), CrystalCard({'Yellow': 2}, "")], [], [], 0, position)
         elif position in [2, 3]:
             return cls(name, {'Yellow': 4, 'Green': 0, 'Blue': 0, 'Pink': 0}, [UpgradeCard(2, ""), CrystalCard({'Yellow': 2}, "")], [], [], 0, position)
         elif position in [4, 5]:
@@ -84,7 +84,7 @@ class Player:
                                 c+=1
                 self.inventory = temp_inventory
             else:
-                selected_crystals = []
+                selected_crystals.clear()
                 print("Please select a valid number of crystals!")
                 return False
 
@@ -94,6 +94,7 @@ class Player:
 
             self.active_cards.append(card)
             cards.remove(card)
+            selected_crystals.clear()
             print('Successfully added card!')
             return True
 
@@ -210,6 +211,27 @@ class Player:
             #self.active_cards.remove(card)
             print('Successfully upgraded crystals!')
             #return True
+    def remove_excess_crystals(self):
+        num_crystals = sum(self.inventory.values())
+        if num_crystals <= 10:
+            return True
+        if len(selected_crystals) != num_crystals - 10:
+            selected_crystals.clear()
+            print("Please select a valid number of crystals to return!")
+            return False
+        
+        temp_inventory = self.inventory.copy()
+        for selected_crystal_pos in selected_crystals:
+                    c=0
+                    for crystal in self.inventory:
+                        for unit in range(self.inventory[crystal]):
+                            if selected_crystal_pos == c:
+                                temp_inventory[crystal] -= 1
+                            c+=1
+        self.inventory = temp_inventory
+        selected_crystals.clear()
+        print("Successfully returned excess crystals!")
+        return True
                 
 
 class Golem:
@@ -270,16 +292,19 @@ def load_crystals(player):
     i=0
     for crystal, crystal_count in player.inventory.items():
         for x in range(crystal_count):
-            if crystal == 'Yellow':
-                color = (255, 255, 0)
-            elif crystal == 'Green':
-                color = (0, 255, 0)
-            elif crystal == 'Blue':
-                color = (64, 224, 208)
+            if i >= 10:
+                return
             else:
-                color = (253, 61, 181)
-            coordinate = crystal_positions[i]    
-            pygame.draw.circle(screen, color, coordinate, 20)
+                if crystal == 'Yellow':
+                    color = (255, 255, 0)
+                elif crystal == 'Green':
+                    color = (0, 255, 0)
+                elif crystal == 'Blue':
+                    color = (64, 224, 208)
+                else:
+                    color = (253, 61, 181)
+                coordinate = crystal_positions[i]    
+                pygame.draw.circle(screen, color, coordinate, 20)
             i+=1
 
 
@@ -295,7 +320,8 @@ def select():
                 print(f"Crystal {curr_circle_clicked} selected!")
                 selected_crystals.append(curr_circle_clicked)
     
-            
+
+
 
     
 
@@ -386,7 +412,7 @@ freebies = [
     {'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0},
     {'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0},
     {'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0},
-    {'Yellow': 1, 'Green': 0, 'Blue': 3, 'Pink': 0},
+    {'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0},
     {'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0},
     {'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0},
 ]
@@ -443,6 +469,7 @@ while True:
                     if players[move].buy_golem(golems[0]):
                         if len(players[move].golems) == max_golems:
                             final_turn = True
+                        
                         move_next()
                 elif event.key == pygame.K_2:
                     if players[move].acquire(cards[3]):
@@ -451,7 +478,7 @@ while True:
                     if players[move].play(players[move].active_cards[0]):
                         move_next()
                 elif event.key == pygame.K_4:
-                    if players[move].rest():
+                    if players[move].rest() or players[move].remove_excess_crystals():
                         move_next()
                 elif event.key == pygame.K_i:
                     print(players[move].inventory)
@@ -467,7 +494,7 @@ while True:
                     select()
                     print(selected_crystals)
                 elif event.button == 3:
-                    selected_crystals = []
+                    selected_crystals.clear()
                     print('Deselected crystals!')
 
                 
