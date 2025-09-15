@@ -257,13 +257,13 @@ def move_next():
     global final_turn
     if move != 3:
                 move += 1
-                move_text_surface = test_font_2.render(f"{players[move]}'s move", True, 'White')
+                move_text_surface = move_font.render(f"{players[move]}'s move", True, 'White')
     else:
         if not final_turn:
             move = 0
             turn += 1
-            move_text_surface = test_font_2.render(f"{players[move]}'s move", True, 'White')
-            turn_text_surface = test_font_1.render(f'Turn {turn}', True, 'White')
+            move_text_surface = move_font.render(f"{players[move]}'s move", True, 'White')
+            turn_text_surface = turn_font.render(f'Turn {turn}', True, 'White')
         else:
             game_over()
 
@@ -352,12 +352,22 @@ screen = pygame.display.set_mode((screen_width, screen_height), pygame.RESIZABLE
 pygame.display.set_caption("Century: Golem Edition")
 clock = pygame.time.Clock()
 
-test_font_1 = pygame.font.Font(None, 110)
-test_font_2 = pygame.font.Font(None, 80)
+
+
+turn_font = pygame.font.Font(None, 110)
+move_font = pygame.font.Font(None, 80)
+start_font = pygame.font.Font(None, 115)
+settings_font = pygame.font.Font(None, 60)
+
+
+start_surface = start_font.render(f'Start', True, 'Black')
+start_rect = start_surface.get_rect(center = (599, 450))
+
+settings_surface = settings_font.render(f'Settings', True, 'gray16')
+settings_rect = settings_surface.get_rect(center = (599, 520))
 
 board_surface = pygame.image.load('Graphics/Background.jpg').convert()
 main_menu_surface = pygame.image.load('Graphics/Main Menu.png').convert()
-
 
 merchant_back_surf = pygame.image.load('Graphics/Merchant_Card_Back.png').convert_alpha()
 merchant_back_rect = merchant_back_surf.get_rect(topleft = (1650, 480))
@@ -482,13 +492,17 @@ turn = 1
 move = 0
 final_turn = False
 main_menu_active = False
+settings_menu_active = False
 silver_coins_slid = False
+
+turn_text_surface = turn_font.render(f'Turn {turn}', True, 'White')
+move_text_surface = move_font.render(f"{players[move]}'s move", True, 'White')
+
 if len(players) >= 4:
     max_golems = 5
 else:
     max_golems = 6
-turn_text_surface = test_font_1.render(f'Turn {turn}', True, 'White')
-move_text_surface = test_font_2.render(f"{players[move]}'s move", True, 'White')
+
 while True:
     if not main_menu_active:
         for event in pygame.event.get():
@@ -582,7 +596,7 @@ while True:
         pygame.display.update()
         clock.tick(60)
         ###
-    else:
+    elif main_menu_active:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -596,5 +610,7 @@ while True:
                     main_menu_active = False
 
         screen.blit(main_menu_surface, (0,0))
+        screen.blit(start_surface, start_rect)
+        screen.blit(settings_surface, settings_rect)
         pygame.display.update()
         clock.tick(60)
