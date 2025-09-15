@@ -2,6 +2,7 @@ import pygame
 from sys import exit
 from random import shuffle
 from math import dist
+from os import environ
 
 class MerchantCard:
     def __init__(self):
@@ -343,7 +344,7 @@ def select():
             else:   
                 print(f"Crystal {curr_circle_clicked} selected!")
                 selected_crystals.append(curr_circle_clicked)
-    
+
 
 pygame.init() #When finished with everything, switch back width and height to be 1199x630 so main menu appears upon startup (1920x1080)
 screen_width = 1199
@@ -351,8 +352,6 @@ screen_height = 630
 screen = pygame.display.set_mode((screen_width, screen_height), pygame.RESIZABLE)
 pygame.display.set_caption("Century: Golem Edition")
 clock = pygame.time.Clock()
-
-
 
 turn_font = pygame.font.Font(None, 110)
 move_font = pygame.font.Font(None, 80)
@@ -517,6 +516,7 @@ while True:
                 if event.key == pygame.K_ESCAPE:
                     screen_width = 1199
                     screen_height = 630
+                    environ['SDL_VIDEO_CENTERED'] = '1'
                     screen = pygame.display.set_mode((screen_width, screen_height), pygame.RESIZABLE)
                     main_menu_active = True
 
@@ -565,7 +565,6 @@ while True:
         screen.blit(board_surface, (0,0))
         screen.blit(turn_text_surface, (60,50))
         screen.blit(move_text_surface, (60, 140))
-        #merchant_rect.x-=5
         if merchant_back_rect.right <= 0:
             merchant_back_rect.left = 1920
         screen.blit(merchant_back_surf, merchant_back_rect)
@@ -612,6 +611,7 @@ while True:
                 if start_rect.collidepoint(event.pos):
                     screen_width = 1920
                     screen_height = 1080
+                    environ['SDL_VIDEO_CENTERED'] = '1'
                     screen = pygame.display.set_mode((screen_width, screen_height), pygame.RESIZABLE)
                     main_menu_active = False
 
