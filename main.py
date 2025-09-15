@@ -345,9 +345,9 @@ def select():
                 selected_crystals.append(curr_circle_clicked)
     
 
-pygame.init() #When finished with everything, switch back width and height to be 1199x630 so main menu appears upon startup
-screen_width = 1920
-screen_height = 1080
+pygame.init() #When finished with everything, switch back width and height to be 1199x630 so main menu appears upon startup (1920x1080)
+screen_width = 1199
+screen_height = 630
 screen = pygame.display.set_mode((screen_width, screen_height), pygame.RESIZABLE)
 pygame.display.set_caption("Century: Golem Edition")
 clock = pygame.time.Clock()
@@ -491,7 +491,7 @@ selected_crystals = []
 turn = 1
 move = 0
 final_turn = False
-main_menu_active = False
+main_menu_active = True
 settings_menu_active = False
 silver_coins_slid = False
 
@@ -602,12 +602,29 @@ while True:
                 pygame.quit()
                 exit()
             
+            mouse_pos = pygame.mouse.get_pos()
+
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_SPACE:
+                    pass
+
+            if event.type == pygame.MOUSEBUTTONUP:
+                if start_rect.collidepoint(event.pos):
                     screen_width = 1920
                     screen_height = 1080
                     screen = pygame.display.set_mode((screen_width, screen_height), pygame.RESIZABLE)
                     main_menu_active = False
+
+            if start_rect.collidepoint(mouse_pos):
+                start_surface = start_font.render(f'Start', True, 'Red')
+            else:
+                start_surface = start_font.render(f'Start', True, 'Black')
+
+            if settings_rect.collidepoint(mouse_pos):
+                settings_surface = settings_font.render(f'Settings', True, 'Red')
+            else:
+                settings_surface = settings_font.render(f'Settings', True, 'grey16')
+
 
         screen.blit(main_menu_surface, (0,0))
         screen.blit(start_surface, start_rect)
