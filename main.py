@@ -418,12 +418,34 @@ golem_surf1 = pygame.image.load('Graphics/Golem_Card_Back.png').convert_alpha()
 golem_rect1 = golem_surf1.get_rect(topleft = (1650-220*5, 80))
 
 
+
 players = [
     Player.from_name('P1', 1),
     Player.from_name('P2', 2),
     Player.from_name('P3', 3),
     Player.from_name('P4', 4)
 ]
+
+up_points = [
+    (500, 250),
+    (530, 250),
+    (515, 230)
+]
+
+down_points = [
+    (500, 260),
+    (530, 260),
+    (515, 280)
+]
+
+xst = [p[0] for p in up_points]
+yst = [p[1] for p in up_points]
+
+xsd = [p[0] for p in down_points]
+ysd = [p[1] for p in down_points]
+
+up_rect = pygame.Rect(min(xst), min(yst), max(xst) - min(xst), max(yst) - min(yst))
+down_rect = pygame.Rect(min(xsd), min(ysd), max(xsd) - min(xsd), max(ysd) - min(ysd))
 
 copper_coins = 2 * len(players)
 silver_coins = 2 * len(players)
@@ -655,6 +677,9 @@ while True:
                 pygame.quit()
                 exit()
 
+            #if event.type == pygame.MOUSEMOTION:
+            #    print(event.pos)
+
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_ESCAPE:
                     screen_width = 1199
@@ -663,11 +688,24 @@ while True:
                     screen = pygame.display.set_mode((screen_width, screen_height), pygame.RESIZABLE)
                     main_menu_active = True
                     settings_menu_active = False
+            
+            if event.type == pygame.MOUSEBUTTONUP:
+                if up_rect.collidepoint(event.pos):
+                    if player_count < 5:
+                        player_count += 1
+                        player_count_surf = move_font.render(f'{player_count}', True, 'White')
+                if down_rect.collidepoint(event.pos):
+                    if player_count > 2:
+                        player_count -= 1
+                        player_count_surf = move_font.render(f'{player_count}', True, 'White')
 
         screen.blit(settings_surface, (0,0))
         screen.blit(settings_header, settings_header_rect)
         screen.blit(players_text_surf, players_text_rect)
         screen.blit(player_count_surf, player_count_rect)
+
+        pygame.draw.polygon(screen, (255, 255, 255), up_points)
+        pygame.draw.polygon(screen, (255, 255, 255), down_points)
 
 
 
