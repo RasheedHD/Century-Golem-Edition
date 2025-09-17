@@ -168,7 +168,7 @@ class Player:
         
         elif isinstance(card, UpgradeCard): #Input validation needs to be implemented
             if len(selected_crystals) > card.num_upgrades or len(selected_crystals) == 0:
-                print(f'Please select {card.num_upgrades} cards or less! (Not zero)')
+                print(f'Please select {card.num_upgrades} crystals or less! (Not zero)')
                 selected_crystals.clear()
                 return False
             temp_inventory = self.inventory.copy()
@@ -215,9 +215,9 @@ class Player:
             self.inventory = temp_inventory.copy()
             selected_crystals.clear()
             self.inactive_cards.append(card)
-            #self.active_cards.remove(card)
+            self.active_cards.remove(card)
             print('Successfully upgraded crystals!')
-            #return True
+            return True
     def remove_excess_crystals(self):
         num_crystals = sum(self.inventory.values())
         if num_crystals <= 10:
@@ -256,7 +256,7 @@ def move_next():
     global move
     global turn
     global final_turn
-    if move != 3:
+    if move != len(players)-1:
                 move += 1
                 move_text_surface = move_font.render(f"{players[move]}'s move", True, 'White')
     else:
@@ -371,6 +371,12 @@ settings_text_rect = settings_text_surf.get_rect(center = (599, 520))
 players_text_surf = move_font.render(f'Players:', True, 'White')
 players_text_rect = players_text_surf.get_rect(center = (150, 250))
 
+set_names_surf = settings_font.render(f'Set player names', True, 'White')
+set_names_rect = set_names_surf.get_rect(center = (300, 350))
+
+confirm_surf = turn_font.render(f'Confirm', True, 'brown1')
+confirm_rect = confirm_surf.get_rect(center = (300, 800))
+
 board_surface = pygame.image.load('Graphics/Background.jpg').convert()
 main_menu_surface = pygame.image.load('Graphics/Main Menu.png').convert()
 settings_surface = pygame.image.load('Graphics/SettingsBG.jpg').convert()
@@ -451,7 +457,7 @@ copper_coins = 2 * len(players)
 silver_coins = 2 * len(players)
 
 golems = [
-    Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 15, ""),
+    Golem({'Yellow': 3, 'Green': 0, 'Blue': 0, 'Pink': 0}, 15, ""),
     Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 10, ""),
     Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 5, ""),
     Golem({'Yellow': 0, 'Green': 0, 'Blue': 0, 'Pink': 0}, 15, ""),
@@ -516,7 +522,7 @@ selected_crystals = []
 #shuffle(cards)
 #shuffle(players)
 
-player_count = 2
+player_count = 4
 turn = 1
 move = 0
 final_turn = False
@@ -563,7 +569,7 @@ while True:
                     if players[move].acquire(cards[3]):
                         move_next()
                 elif event.key == pygame.K_3:
-                    if players[move].play(players[move].active_cards[0]):
+                    if players[move].play(players[move].active_cards[2]):
                         move_next()
                 elif event.key == pygame.K_4:
                     if players[move].rest() or players[move].remove_excess_crystals():
@@ -627,7 +633,7 @@ while True:
 
         pygame.display.update()
         clock.tick(60)
-        ###
+
     elif not settings_menu_active:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -671,23 +677,20 @@ while True:
         screen.blit(settings_text_surf, settings_text_rect)
         pygame.display.update()
         clock.tick(60)
+
     elif settings_menu_active:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                exit()
-
+                exit()     
+            
+            mouse_pos = pygame.mouse.get_pos()
             #if event.type == pygame.MOUSEMOTION:
             #    print(event.pos)
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_ESCAPE:
-                    screen_width = 1199
-                    screen_height = 630
-                    environ['SDL_VIDEO_CENTERED'] = '1'
-                    screen = pygame.display.set_mode((screen_width, screen_height), pygame.RESIZABLE)
-                    main_menu_active = True
-                    settings_menu_active = False
+                    pass
             
             if event.type == pygame.MOUSEBUTTONUP:
                 if up_rect.collidepoint(event.pos):
@@ -698,14 +701,46 @@ while True:
                     if player_count > 2:
                         player_count -= 1
                         player_count_surf = move_font.render(f'{player_count}', True, 'White')
+                if confirm_rect.collidepoint(event.pos):
+                    screen_width = 1199
+                    screen_height = 630
+                    environ['SDL_VIDEO_CENTERED'] = '1'
+                    screen = pygame.display.set_mode((screen_width, screen_height), pygame.RESIZABLE)
+                    main_menu_active = True
+                    settings_menu_active = False
+                if set_names_rect.collidepoint(event.pos):
+                    players = [Player.from_name(f"P{x+1}", x+1) for x in range(player_count)]
+
+            if confirm_rect.collidepoint(mouse_pos):
+                confirm_surf = turn_font.render(f'Confirm', True, 'Red')
+            else:
+                confirm_surf = turn_font.render(f'Confirm', True, 'White')
+
+            if set_names_rect.collidepoint(mouse_pos):
+                set_names_surf = settings_font.render(f'Set player names', True, 'Red')
+            else:
+                set_names_surf = settings_font.render(f'Set player names', True, 'White')
+
+            if up_rect.collidepoint(mouse_pos):
+                up_arrow_color = (255, 0, 0)
+            else:
+                up_arrow_color = (255, 255, 255)
+
+            if down_rect.collidepoint(mouse_pos):
+                down_arrow_color = (255, 0, 0)
+            else:
+                down_arrow_color = (255, 255, 255)
 
         screen.blit(settings_surface, (0,0))
+        pygame.draw.polygon(screen, up_arrow_color, up_points)
+        pygame.draw.polygon(screen, down_arrow_color, down_points)
         screen.blit(settings_header, settings_header_rect)
         screen.blit(players_text_surf, players_text_rect)
         screen.blit(player_count_surf, player_count_rect)
+        screen.blit(set_names_surf, set_names_rect)
+        screen.blit(confirm_surf, confirm_rect)
 
-        pygame.draw.polygon(screen, (255, 255, 255), up_points)
-        pygame.draw.polygon(screen, (255, 255, 255), down_points)
+        
 
 
 
