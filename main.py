@@ -359,14 +359,21 @@ start_font = pygame.font.Font(None, 115)
 settings_font = pygame.font.Font(None, 60)
 
 
-start_surface = start_font.render(f'Start', True, 'Black')
-start_rect = start_surface.get_rect(center = (599, 450))
+start_text_surf = start_font.render(f'Start', True, 'Black')
+start_text_rect = start_text_surf.get_rect(center = (599, 450))
 
-settings_surface = settings_font.render(f'Settings', True, 'gray16')
-settings_rect = settings_surface.get_rect(center = (599, 520))
+settings_header = start_font.render(f"Settings", True, "navyblue")
+settings_header_rect = settings_header.get_rect(center = (300, 100))
+
+settings_text_surf = settings_font.render(f'Settings', True, 'gray16')
+settings_text_rect = settings_text_surf.get_rect(center = (599, 520))
+
+players_text_surf = move_font.render(f'Players:', True, 'White')
+players_text_rect = players_text_surf.get_rect(center = (150, 250))
 
 board_surface = pygame.image.load('Graphics/Background.jpg').convert()
 main_menu_surface = pygame.image.load('Graphics/Main Menu.png').convert()
+settings_surface = pygame.image.load('Graphics/SettingsBG.jpg').convert()
 
 merchant_back_surf = pygame.image.load('Graphics/Merchant_Card_Back.png').convert_alpha()
 merchant_back_rect = merchant_back_surf.get_rect(topleft = (1650, 480))
@@ -487,6 +494,7 @@ selected_crystals = []
 #shuffle(cards)
 #shuffle(players)
 
+player_count = 2
 turn = 1
 move = 0
 final_turn = False
@@ -497,13 +505,16 @@ silver_coins_slid = False
 turn_text_surface = turn_font.render(f'Turn {turn}', True, 'White')
 move_text_surface = move_font.render(f"{players[move]}'s move", True, 'White')
 
+player_count_surf = move_font.render(f'{player_count}', True, 'White')
+player_count_rect = player_count_surf.get_rect(center = (450, 255))
+
 if len(players) >= 4:
     max_golems = 5
 else:
     max_golems = 6
 
 while True:
-    if not main_menu_active:
+    if not main_menu_active and not settings_menu_active:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -595,7 +606,7 @@ while True:
         pygame.display.update()
         clock.tick(60)
         ###
-    elif main_menu_active:
+    elif not settings_menu_active:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -608,26 +619,58 @@ while True:
                     pass
 
             if event.type == pygame.MOUSEBUTTONUP:
-                if start_rect.collidepoint(event.pos):
+                if start_text_rect.collidepoint(event.pos):
                     screen_width = 1920
                     screen_height = 1080
                     environ['SDL_VIDEO_CENTERED'] = '1'
                     screen = pygame.display.set_mode((screen_width, screen_height), pygame.RESIZABLE)
                     main_menu_active = False
+                elif settings_text_rect.collidepoint(event.pos):
+                    screen_width = 600
+                    screen_height = 900
+                    environ['SDL_VIDEO_CENTERED'] = '1'
+                    screen = pygame.display.set_mode((screen_width, screen_height), pygame.RESIZABLE)
+                    main_menu_active = False
+                    settings_menu_active = True
 
-            if start_rect.collidepoint(mouse_pos):
-                start_surface = start_font.render(f'Start', True, 'Red')
+            if start_text_rect.collidepoint(mouse_pos):
+                start_text_surf = start_font.render(f'Start', True, 'Red')
             else:
-                start_surface = start_font.render(f'Start', True, 'Black')
+                start_text_surf = start_font.render(f'Start', True, 'Black')
 
-            if settings_rect.collidepoint(mouse_pos):
-                settings_surface = settings_font.render(f'Settings', True, 'Red')
+            if settings_text_rect.collidepoint(mouse_pos):
+                settings_text_surf = settings_font.render(f'Settings', True, 'Red')
             else:
-                settings_surface = settings_font.render(f'Settings', True, 'grey16')
+                settings_text_surf = settings_font.render(f'Settings', True, 'grey16')
 
 
         screen.blit(main_menu_surface, (0,0))
-        screen.blit(start_surface, start_rect)
-        screen.blit(settings_surface, settings_rect)
+        screen.blit(start_text_surf, start_text_rect)
+        screen.blit(settings_text_surf, settings_text_rect)
         pygame.display.update()
         clock.tick(60)
+    elif settings_menu_active:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_ESCAPE:
+                    screen_width = 1199
+                    screen_height = 630
+                    environ['SDL_VIDEO_CENTERED'] = '1'
+                    screen = pygame.display.set_mode((screen_width, screen_height), pygame.RESIZABLE)
+                    main_menu_active = True
+                    settings_menu_active = False
+
+        screen.blit(settings_surface, (0,0))
+        screen.blit(settings_header, settings_header_rect)
+        screen.blit(players_text_surf, players_text_rect)
+        screen.blit(player_count_surf, player_count_rect)
+
+
+
+        pygame.display.update()
+        clock.tick(60)
+        
