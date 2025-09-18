@@ -357,6 +357,7 @@ turn_font = pygame.font.Font(None, 110)
 move_font = pygame.font.Font(None, 80)
 start_font = pygame.font.Font(None, 115)
 settings_font = pygame.font.Font(None, 60)
+input_font = pygame.font.Font(None, 50)
 
 
 start_text_surf = start_font.render(f'Start', True, 'Black')
@@ -373,6 +374,9 @@ players_text_rect = players_text_surf.get_rect(center = (150, 250))
 
 set_names_surf = settings_font.render(f'Set player names', True, 'White')
 set_names_rect = set_names_surf.get_rect(center = (300, 350))
+
+input_name_surf = input_font.render(f"Type in the first player's name", True, "White")
+input_name_rect = input_name_surf.get_rect(center = (300, 450))
 
 confirm_surf = turn_font.render(f'Confirm', True, 'brown1')
 confirm_rect = confirm_surf.get_rect(center = (300, 800))
@@ -529,12 +533,16 @@ final_turn = False
 main_menu_active = True
 settings_menu_active = False
 silver_coins_slid = False
+prompt_user_input = False
+
 
 turn_text_surface = turn_font.render(f'Turn {turn}', True, 'White')
 move_text_surface = move_font.render(f"{players[move]}'s move", True, 'White')
 
 player_count_surf = move_font.render(f'{player_count}', True, 'White')
 player_count_rect = player_count_surf.get_rect(center = (450, 255))
+
+
 
 if len(players) >= 4:
     max_golems = 5
@@ -710,6 +718,8 @@ while True:
                     settings_menu_active = False
                 if set_names_rect.collidepoint(event.pos):
                     players = [Player.from_name(f"P{x+1}", x+1) for x in range(player_count)]
+                    prompt_user_input = True
+                    
 
             if confirm_rect.collidepoint(mouse_pos):
                 confirm_surf = turn_font.render(f'Confirm', True, 'Red')
@@ -738,8 +748,10 @@ while True:
         screen.blit(players_text_surf, players_text_rect)
         screen.blit(player_count_surf, player_count_rect)
         screen.blit(set_names_surf, set_names_rect)
+        if prompt_user_input:
+            screen.blit(input_name_surf, input_name_rect)
         screen.blit(confirm_surf, confirm_rect)
-
+        
         
 
 
